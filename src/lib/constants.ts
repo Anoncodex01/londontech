@@ -4,11 +4,11 @@ export const BRAND = {
   promise:
     "At London Technologies, we believe technology should be reliable, affordable, and accessible. Every product we sell is chosen to deliver quality, performance, and value—backed by exceptional customer service before and after your purchase.",
   closing: "Designed for Clarity. Built for Life.",
-  phone: "+255 700 000 000",
-  phoneHref: "tel:+255700000000",
-  whatsapp: "+255 700 000 000",
+  phone: "+255 714 335 285",
+  phoneHref: "tel:+255714335285",
+  whatsapp: "+255 714 335 285",
   whatsappHref:
-    "https://wa.me/255700000000?text=Hi%20London%20Technologies%2C%20I%27d%20like%20to%20order",
+    "https://wa.me/255714335285?text=Hi%20London%20Technologies%2C%20I%27d%20like%20to%20order",
   email: "hello@londontechnologies.co.tz",
   emailHref: "mailto:hello@londontechnologies.co.tz",
   hours: {

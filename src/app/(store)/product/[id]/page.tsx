@@ -27,6 +27,7 @@ export default function ProductDetailPage() {
   const [qty, setQty] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
   const [added, setAdded] = useState(false);
+  const [activeTab, setActiveTab] = useState<"details" | "specs" | "shipping" | "reviews">("details");
 
   const product = useMemo(
     () => products.find((item) => item.id === params.id),
@@ -37,6 +38,7 @@ export default function ProductDetailPage() {
     setQty(1);
     setActiveImage(0);
     setAdded(false);
+    setActiveTab("details");
   }, [params.id]);
 
   if (!ready) {
@@ -68,9 +70,16 @@ export default function ProductDetailPage() {
         : [];
   const cover = images[activeImage] || images[0];
   const disabled = product.stock === "out-of-stock";
-  const whatsappUrl = `https://wa.me/255700000000?text=${encodeURIComponent(
-    `Hi London Technologies, I'd like to buy: ${product.name}`,
+  const whatsappUrl = `https://wa.me/255714335285?text=${encodeURIComponent(
+    `Hello London Technologies, I want to order the ${product.name} for ${formatPrice(product.price)}. Is it available?`,
   )}`;
+
+  const tabs = [
+    { key: "details" as const, label: "Details" },
+    { key: "specs" as const, label: "Specifications" },
+    { key: "shipping" as const, label: "Shipping & Delivery" },
+    { key: "reviews" as const, label: "Reviews" },
+  ];
 
   return (
     <div className="container-shell section-pad py-10 md:py-14">
@@ -147,6 +156,11 @@ export default function ProductDetailPage() {
             <a
               href="#product-reviews"
               className="inline-flex items-center gap-1.5 text-ink-soft hover:text-brand"
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveTab("reviews");
+                document.getElementById("product-tabs")?.scrollIntoView({ behavior: "smooth" });
+              }}
             >
               <Star className="size-4 fill-amber-400 text-amber-400" />
               <span className="font-semibold text-ink">{product.rating}</span>
@@ -246,24 +260,116 @@ export default function ProductDetailPage() {
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-ghost"
+              className="inline-flex items-center gap-2 rounded-full border border-emerald-500 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-500 hover:text-white"
             >
               <MessageCircle className="size-4" />
-              WhatsApp
+              ORDER VIA WHATSAPP (0714335285)
             </a>
           </div>
         </div>
       </div>
 
-      <SimilarProducts product={product} products={products} />
+      {/* Tabs section */}
+      <div id="product-tabs" className="mt-12">
+        {/* Tab bar */}
+        <div className="overflow-x-auto">
+          <div className="flex min-w-max border-b border-line">
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setActiveTab(tab.key)}
+                className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
+                  activeTab === tab.key
+                    ? "border-brand text-brand"
+                    : "border-transparent text-ink-soft hover:text-ink"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
-      <div id="product-reviews">
-        <ProductReviews
-          productName={product.name}
-          rating={product.rating}
-          reviewCount={product.reviews}
-        />
+        {/* Tab content */}
+        <div className="mt-6">
+          {activeTab === "details" && (
+            <div>
+              {(product as { description?: string }).description && (
+                <p className="mb-4 text-ink-soft leading-relaxed">
+                  {(product as { description?: string }).description}
+                </p>
+              )}
+              <ul className="space-y-3">
+                {product.specs.map((spec, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span className="mt-1.5 size-2 shrink-0 rounded-full bg-brand" />
+                    <span className="text-ink-soft">{spec}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {activeTab === "specs" && (
+            <div className="divide-y divide-line">
+              {product.specs.map((spec, i) => (
+                <div key={i} className="grid grid-cols-[140px_1fr] gap-4 py-3 text-sm">
+                  <span className="font-semibold text-ink">Spec {i + 1}</span>
+                  <span className="text-ink-soft">{spec}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeTab === "shipping" && (
+            <div className="rounded-2xl border border-line bg-white/80 p-6 space-y-4">
+              <div className="flex items-start gap-3">
+                <span className="text-xl">🚚</span>
+                <div>
+                  <p className="font-semibold text-ink">Dar es Salaam</p>
+                  <p className="text-sm text-ink-soft">1 Day delivery</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-xl">📦</span>
+                <div>
+                  <p className="font-semibold text-ink">Other Regions</p>
+                  <p className="text-sm text-ink-soft">
+                    {BRAND.delivery.regions || "2–5 Days"}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-xl">🛡️</span>
+                <div>
+                  <p className="font-semibold text-ink">Warranty</p>
+                  <p className="text-sm text-ink-soft">{product.warranty}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-xl">🔄</span>
+                <div>
+                  <p className="font-semibold text-ink">Returns</p>
+                  <p className="text-sm text-ink-soft">7-day return policy</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "reviews" && (
+            <div id="product-reviews">
+              <ProductReviews
+                productName={product.name}
+                rating={product.rating}
+                reviewCount={product.reviews}
+              />
+            </div>
+          )}
+        </div>
       </div>
+
+      <SimilarProducts product={product} products={products} />
     </div>
   );
 }

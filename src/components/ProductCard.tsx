@@ -9,18 +9,24 @@ import { formatPrice } from "@/data/catalog";
 import { useCart } from "@/lib/cart";
 import { BRAND } from "@/lib/constants";
 
-const stockLabel: Record<Product["stock"], { text: string; className: string }> = {
+const stockConfig: Record<
+  Product["stock"],
+  { text: string; dotColor: string; textColor: string }
+> = {
   "in-stock": {
     text: "In Stock",
-    className: "bg-emerald-50 text-emerald-700",
+    dotColor: "bg-emerald-500",
+    textColor: "text-emerald-700",
   },
   limited: {
     text: "Limited Stock",
-    className: "bg-amber-50 text-amber-700",
+    dotColor: "bg-amber-500",
+    textColor: "text-amber-700",
   },
   "out-of-stock": {
     text: "Out of Stock",
-    className: "bg-rose-50 text-rose-700",
+    dotColor: "bg-rose-500",
+    textColor: "text-rose-700",
   },
 };
 
@@ -32,13 +38,20 @@ export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart();
   const [wishlisted, setWishlisted] = useState(false);
   const [added, setAdded] = useState(false);
-  const stock = stockLabel[product.stock];
+  const stock = stockConfig[product.stock];
   const cover = product.imageUrls?.[0] || product.imageUrl;
   const disabled = product.stock === "out-of-stock";
 
-  const whatsappUrl = `https://wa.me/255700000000?text=${encodeURIComponent(
-    `Hi London Technologies, I'd like to buy: ${product.name}`,
+  const discount =
+    product.originalPrice
+      ? Math.round((1 - product.price / product.originalPrice) * 100)
+      : null;
+
+  const whatsappUrl = `https://wa.me/255714335285?text=${encodeURIComponent(
+    `Hello London Technologies, I want to order the ${product.name} for ${formatPrice(product.price)}. Is it available?`,
   )}`;
+
+  const filledStars = Math.round(product.rating);
 
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-white/90 shadow-[0_8px_30px_rgba(14,64,84,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(37,150,190,0.14)]">
@@ -74,79 +87,88 @@ export function ProductCard({ product }: ProductCardProps) {
             </>
           )}
         </Link>
+
+        {/* Sale discount badge — top-left, above product.badge */}
+        {discount !== null && (
+          <span className="absolute top-3 left-3 z-20 rounded-full bg-rose-600 px-2.5 py-1 text-xs font-bold text-white shadow">
+            {discount}% OFF
+          </span>
+        )}
         {product.badge && (
-          <span className="absolute top-3 left-3 z-10 rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-brand-deeper">
+          <span
+            className={`absolute left-3 z-10 rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-brand-deeper ${discount !== null ? "top-10" : "top-3"}`}
+          >
             {product.badge}
           </span>
         )}
-        <button
-          type="button"
-          aria-label="Add to wishlist"
-          onClick={() => setWishlisted((v) => !v)}
-          className="absolute top-3 right-3 z-10 inline-flex size-9 items-center justify-center rounded-full bg-white/95 text-ink-soft transition-colors hover:text-rose-500"
-        >
-          <Heart
-            className={`size-4 ${wishlisted ? "fill-rose-500 text-rose-500" : ""}`}
-          />
-        </button>
+
       </div>
 
       <div className="flex flex-1 flex-col p-4 md:p-5">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-xs font-medium tracking-wide text-brand uppercase">
-              {product.category}
-            </p>
-            <Link href={`/product/${product.id}`}>
-              <h3 className="mt-1 font-display text-lg font-semibold tracking-tight text-ink hover:text-brand">
-                {product.name}
-              </h3>
-            </Link>
-          </div>
-          <span
-            className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${stock.className}`}
-          >
+        {/* Category + name */}
+        <div>
+          <p className="text-xs font-medium tracking-wide text-brand uppercase">
+            {product.category}
+          </p>
+          <Link href={`/product/${product.id}`}>
+            <h3 className="mt-1 font-display text-lg font-semibold tracking-tight text-ink hover:text-brand">
+              {product.name}
+            </h3>
+          </Link>
+        </div>
+
+        {/* Stock indicator — inline colored dot */}
+        <div className="mt-2 flex items-center gap-1.5">
+          <span className={`inline-block size-2.5 rounded-full ${stock.dotColor}`} />
+          <span className={`text-xs font-semibold ${stock.textColor}`}>
             {stock.text}
           </span>
         </div>
 
-        <div className="mt-2 flex items-center gap-1.5 text-sm text-ink-soft">
-          <Star className="size-4 fill-amber-400 text-amber-400" />
+        {/* Star rating row */}
+        <div className="mt-2 flex items-center gap-1.5 text-sm">
+          <span className="flex items-center gap-0.5">
+            {Array.from({ length: 5 }, (_, i) => (
+              <Star
+                key={i}
+                className={`size-3.5 ${
+                  i < filledStars
+                    ? "fill-amber-400 text-amber-400"
+                    : "fill-gray-200 text-gray-200"
+                }`}
+              />
+            ))}
+          </span>
           <span className="font-semibold text-ink">{product.rating}</span>
-          <span>({product.reviews})</span>
+          <span className="text-ink-soft">({product.reviews})</span>
         </div>
 
-        <ul className="mt-3 space-y-1 text-sm text-ink-soft">
-          {product.specs.slice(0, 3).map((spec) => (
-            <li key={spec} className="flex items-center gap-2">
-              <span className="size-1.5 rounded-full bg-brand" />
-              {spec}
-            </li>
-          ))}
-        </ul>
-
-        <div className="mt-4 flex items-end justify-between gap-3">
-          <div>
-            <p className="font-display text-xl font-bold text-brand-deeper">
-              {formatPrice(product.price)}
+        {/* Price */}
+        <div className="mt-3">
+          <p className="font-display text-xl font-bold text-brand-deeper">
+            {formatPrice(product.price)}
+          </p>
+          {product.originalPrice && (
+            <p className="text-sm text-ink-soft line-through">
+              {formatPrice(product.originalPrice)}
             </p>
-            {product.originalPrice && (
-              <p className="text-sm text-ink-soft line-through">
-                {formatPrice(product.originalPrice)}
-              </p>
-            )}
-          </div>
-          <div className="text-right text-xs text-ink-soft">
-            <p>Warranty: {product.warranty}</p>
-            <p>Delivery: {product.delivery}</p>
-          </div>
+          )}
         </div>
 
-        <div className="mt-auto grid grid-cols-2 gap-2 pt-4">
+        {/* Warranty / Delivery meta */}
+        <div className="mt-1 text-xs text-ink-soft">
+          <span>Warranty: {product.warranty}</span>
+          <span className="mx-1.5">·</span>
+          <span>Delivery: {product.delivery}</span>
+        </div>
+
+        {/* Buttons */}
+        <div className="mt-auto flex flex-col gap-2 pt-4">
+          {/* Primary: Add to Cart — full width */}
           <button
             type="button"
             disabled={disabled}
-            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-brand px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50"
             onClick={() => {
               addItem(product);
               setAdded(true);
@@ -154,24 +176,29 @@ export function ProductCard({ product }: ProductCardProps) {
             }}
           >
             <ShoppingCart className="size-4" />
-            {added ? "Added" : "Add to Cart"}
+            {added ? "Added!" : "Add to Cart"}
           </button>
+
+          {/* WhatsApp secondary */}
           <a
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-line bg-brand-soft px-3 py-2.5 text-sm font-semibold text-brand-deeper transition-colors hover:border-brand"
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-emerald-500 bg-emerald-50 px-3 py-2.5 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-500 hover:text-white"
           >
             <MessageCircle className="size-4" />
-            WhatsApp
+            ORDER VIA WHATSAPP (0714335285)
           </a>
+
+          {/* View Details link */}
           <Link
             href={`/product/${product.id}`}
-            className="col-span-2 inline-flex items-center justify-center gap-1.5 rounded-xl border border-line px-3 py-2 text-sm font-semibold text-ink transition-colors hover:border-brand hover:text-brand"
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-line px-3 py-2 text-sm font-semibold text-ink transition-colors hover:border-brand hover:text-brand"
           >
-            View details
+            View Details
           </Link>
         </div>
+
         <p className="sr-only">
           Contact {BRAND.name} for {product.name}
         </p>

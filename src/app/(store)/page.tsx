@@ -4,12 +4,12 @@ import {
   Categories,
   FAQ,
   FeaturedProducts,
-  Hero,
-  HeroBenefits,
   HotDeals,
   Installation,
   Newsletter,
   NewArrivals,
+  ProductShowcase,
+  Recommended,
   Reviews,
   TrustBadges,
   WhatsAppShopping,
@@ -19,18 +19,16 @@ import {
 export default function Home() {
   return (
     <>
-      <Hero />
-      <HeroBenefits />
+      <ProductShowcase />
+      <Recommended />
       <TrustBadges />
+      <FeaturedProducts />
       <Categories />
       <HotDeals />
-      <FeaturedProducts />
       <BestSellers />
       <NewArrivals />
-      <WhatsAppShopping />
       <WhyShop />
       <Reviews />
-      <Installation />
       <Blog />
       <FAQ />
       <Newsletter />

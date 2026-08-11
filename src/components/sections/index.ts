@@ -18,3 +18,5 @@ export { Blog } from "./Blog";
 export { FAQ } from "./FAQ";
 export { Newsletter } from "./Newsletter";
 export { Contact } from "./Contact";
+export { Recommended } from "./Recommended";
+export { ProductShowcase } from "./ProductShowcase";
