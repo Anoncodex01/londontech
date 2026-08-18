@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Clock3,
@@ -9,12 +8,14 @@ import {
   Truck,
 } from "lucide-react";
 import { BRAND, SOCIALS } from "@/lib/constants";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: `Contact Us | ${BRAND.name}`,
+export const metadata = buildMetadata({
+  title: "Contact Us",
   description:
     "Get in touch with London Technologies by phone, WhatsApp, or email. Nationwide delivery across Tanzania.",
-};
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (

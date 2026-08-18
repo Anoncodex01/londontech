@@ -417,12 +417,20 @@ export function Header() {
               <span className="font-medium">Cart {itemCount > 0 && `(${itemCount})`}</span>
             </Link>
             <Link
+              href="/compare"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-brand-soft"
+            >
+              <BarChart2 className="size-5 text-brand" />
+              <span className="font-medium">Compare products</span>
+            </Link>
+            <Link
               href="/account"
               onClick={() => setMobileOpen(false)}
               className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-brand-soft"
             >
               <User className="size-5 text-brand" />
-              <span className="font-medium">Account / Login</span>
+              <span className="font-medium">Account</span>
             </Link>
             <Link
               href="/checkout"

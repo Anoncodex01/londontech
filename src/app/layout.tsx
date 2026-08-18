@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import { Manrope, Syne } from "next/font/google";
+import { rootMetadata } from "@/lib/seo";
 import "./globals.css";
 
 const display = Syne({
@@ -14,11 +14,7 @@ const body = Manrope({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-export const metadata: Metadata = {
-  title: "London Technologies | Smart Technology. Trusted Quality.",
-  description:
-    "Shop smart projectors, CCTV cameras, networking devices, and gaming gadgets from London Technologies. Genuine products, nationwide delivery across Tanzania.",
-};
+export const metadata = rootMetadata;
 
 export default function RootLayout({
   children,
